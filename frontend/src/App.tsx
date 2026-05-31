@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Repo } from './components/Repo'; // Adjust the import path as needed
+import { Repo } from './components/Repo';
+import { RepoTable } from './components/RepoTable';
 
 function App() {
   const [inputTarget, setInputTarget] = useState('');
@@ -114,30 +115,7 @@ function App() {
             </button>
 
             {showStandardList && (
-              <div style={{ border: '1px solid #222', borderTop: 'none', background: '#111', padding: '1rem' }}>
-                {scanData.standard.length === 0 ? (
-                  <p style={{ color: '#666' }}>No generic logs found.</p>
-                ) : (
-                  <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr style={{ borderBottom: '1px solid #333', color: '#888' }}>
-                        <th style={{ padding: '0.5rem' }}>Asset Identifier</th>
-                        <th style={{ padding: '0.5rem' }}>Environment</th>
-                        <th style={{ padding: '0.5rem' }}>Metrics</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {scanData.standard.map((repo: any, idx: number) => (
-                        <tr key={idx} style={{ borderBottom: '1px solid #222' }}>
-                          <td style={{ padding: '0.75rem 0.5rem', color: '#fff' }}>{repo.name}</td>
-                          <td style={{ padding: '0.75rem 0.5rem', color: '#aaa' }}>{repo.language}</td>
-                          <td style={{ padding: '0.75rem 0.5rem', color: '#888' }}>★ {repo.stars}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
+              <RepoTable repos={scanData.standard} username={scanData.username} />
             )}
           </div>
 
