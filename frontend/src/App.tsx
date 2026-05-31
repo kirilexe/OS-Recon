@@ -27,6 +27,10 @@ function App() {
       setIsScanning(false);
     }
   };
+  
+  function clearLog() {
+    setScanData(null);
+  }
 
   return (
     <div style={{ padding: '2.5rem', fontFamily: 'monospace', background: '#0d0d0d', color: '#00ff66', minHeight: '100vh' }}>
@@ -53,6 +57,16 @@ function App() {
           disabled={isScanning}
         >
           {isScanning ? 'PARSING ENGINE...' : 'ANALYZE'}
+        </button>
+        <button
+        onClick={clearLog}
+        disabled={isScanning}
+        style={{ 
+            background: '#00ff66', color: '#000', border: 'none', padding: '0.75rem 1.75rem', 
+            cursor: 'pointer', fontWeight: 'bold', fontFamily: 'monospace' 
+          }}
+        >
+          Clear Log 
         </button>
       </div>
 
