@@ -3,10 +3,16 @@
 A local desktop reconnaissance and asset-auditing dashboard. It takes a target handle or link, queries public networks, runs custom evaluation logic on the data, and splits the findings into prioritized risks vs. general logs.
 Right now, it's a working MVP focused on GitHub infrastructure.
 
-## FEATURES ATM: (readme last updated on May 30 2026)
+## FEATURES ATM: (readme last updated on May 31 2026)
 - A small minimal dashboard UI for testing.
 - FastAPI server backend running asynchronous, fetching with httpx.
 - One filter that parses github repositories and lists the most "interesting" ones based on criteria.
+- Github commit checker.
+
+## FUTURE FEATURES TASKLIST:
+- Analyze & categorize repositories, commits, etc.
+- Gather more information on the target other than their GitHub profile.
+- More analysis and way more scraping.
 
 
 ## Current Project Layout
