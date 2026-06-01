@@ -1,6 +1,7 @@
 import httpx
 import asyncio
 import re
+from curl_cffi.requests import AsyncSession
 
 # ──────────────────────────────────────────────────────────
 # RESTORED & HARDENED SITE REGISTRY
@@ -331,7 +332,7 @@ def generate_username_variations(base_username: str) -> list[str]:
     return [base] + unique_variations
 
 async def _check_site(
-    client: httpx.AsyncClient,
+    client: httpx.AsyncSession,
     site_name: str,
     site_cfg: dict,
     username: str,
@@ -342,7 +343,7 @@ async def _check_site(
 
     async with semaphore:
         try:
-            resp = await client.get(url, timeout=12, follow_redirects=True)
+            resp = await client.get(url, timeout=12, allow_redirects=True)
             
             is_blocked_status = resp.status_code in [403, 429]
             
@@ -415,10 +416,7 @@ async def scan_username(username: str) -> dict:
         "Accept-Language": "en-US,en;q=0.9",
     }
 
-    timeout = httpx.Timeout(12.0, pool=None)
-    limits = httpx.Limits(max_connections=15, max_keepalive_connections=5)
-
-    async with httpx.AsyncClient(headers=headers, timeout=timeout, limits=limits) as client:
+    async with AsyncSession(impersonate="chrome", timeout=12.0) as client:
         tasks = [
             _check_site(client, name, cfg, variant, semaphore)
             for variant in variations
