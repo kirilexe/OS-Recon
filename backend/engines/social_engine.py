@@ -3,13 +3,8 @@ import asyncio
 import re
 
 # ──────────────────────────────────────────────────────────
-# SITE REGISTRY
-# Each entry mirrors Sherlock's data.json format.
-# errorType controls how we decide "user exists":
-#   - "status_code" → 200 = found, 404/other = not found
-#   - "message"     → page loads (200) but body contains errorMsg = not found
+# RESTORED & HARDENED SITE REGISTRY
 # ──────────────────────────────────────────────────────────
-
 SITES = {
     "GitHub": {
         "url": "https://github.com/{}",
@@ -150,9 +145,11 @@ SITES = {
         "errorType": "status_code",
         "category": "social",
     },
+    # FIXED: Codecademy redirects fake users to a 200 OK landing page. String checking stops false positives.
     "Codecademy": {
         "url": "https://www.codecademy.com/profiles/{}",
-        "errorType": "status_code",
+        "errorType": "message",
+        "errorMsg": "Page not found",
         "category": "development",
     },
     "Replit": {
@@ -175,9 +172,11 @@ SITES = {
         "errorType": "status_code",
         "category": "development",
     },
+    # FIXED: PyPI handles soft 404s dynamically. Message verification locks it down.
     "PyPI": {
         "url": "https://pypi.org/user/{}",
-        "errorType": "status_code",
+        "errorType": "message",
+        "errorMsg": "Not Found",
         "category": "development",
     },
     "Docker Hub": {
@@ -261,10 +260,75 @@ SITES = {
     },
 }
 
+# ──────────────────────────────────────────────────────────
+# CORE UTILITIES & VARIATIONS
+# ──────────────────────────────────────────────────────────
 
-# ──────────────────────────────────────────────────────────
-# CORE CHECK LOGIC
-# ──────────────────────────────────────────────────────────
+PREFIXES = {"the", "real", "iam", "im", "its", "ascended"}
+SUFFIXES = {"dev", "code", "coder", "bot", "git", "hub", "web", "app", "ice", "cat", "dog", "king", "lord", "exe"}
+
+def split_camel_case(username: str) -> tuple[str, str] | None:
+    if re.search(r'[a-z][A-Z]', username):
+        parts = re.findall(r'[A-Z]?[a-z]+|[A-Z]+(?=[A-Z][a-z]|\b)', username)
+        if len(parts) >= 2:
+            return parts[0].lower(), "".join(parts[1:]).lower()
+    return None
+
+def find_smart_split(username: str) -> tuple[str, str] | None:
+    camel_split = split_camel_case(username)
+    if camel_split:
+        return camel_split
+
+    base = username.strip().lower()
+    best_split = None
+    best_score = -1
+
+    for i in range(3, len(base) - 2):
+        left = base[:i]
+        right = base[i:]
+        score = 0
+        if left in PREFIXES:
+            score += 2
+        if right in SUFFIXES:
+            score += 2
+        if score >= 2 and score > best_score:
+            best_score = score
+            best_split = (left, right)
+    return best_split
+
+def generate_username_variations(base_username: str) -> list[str]:
+    base = base_username.strip().lower()
+    variations = []
+
+    if any(char in base for char in ["_", "-", "."]):
+        blended = re.sub(r"[_\-.]", "", base)
+        variations.append(blended)
+        variations.append(f"{base}1")
+        variations.append(f"{blended}1")
+    else:
+        split = find_smart_split(base_username)
+        if split:
+            left, right = split
+            split_uname = f"{left}_{right}"
+            variations.append(f"{base}1")
+            variations.append(split_uname)
+            variations.append(f"{split_uname}1")
+        else:
+            variations.append(f"{base}1")
+            variations.append(f"{base}_1")
+            variations.append(f"{base}01")
+
+    seen = {base}
+    unique_variations = []
+    for var in variations:
+        var = var.strip()
+        if var and var not in seen:
+            seen.add(var)
+            unique_variations.append(var)
+            if len(unique_variations) >= 3:
+                break
+                
+    return [base] + unique_variations
 
 async def _check_site(
     client: httpx.AsyncClient,
@@ -273,17 +337,12 @@ async def _check_site(
     username: str,
     semaphore: asyncio.Semaphore,
 ) -> dict | None:
-    """
-    Probe a single site for the username.
-    Returns a result dict if the user exists, else None.
-    """
     url = site_cfg["url"].format(username)
     error_type = site_cfg["errorType"]
 
     async with semaphore:
         try:
             resp = await client.get(url, timeout=12, follow_redirects=True)
-
             exists = False
 
             if error_type == "status_code":
@@ -294,23 +353,17 @@ async def _check_site(
                 error_msg = site_cfg.get("errorMsg", "")
                 invert = site_cfg.get("invertMatch", False)
                 if invert:
-                    # For sites like Telegram: if the message IS present, user exists
                     exists = error_msg in body
                 else:
-                    # Normal: if error message is absent, user exists
                     exists = resp.status_code == 200 and error_msg not in body
 
             elif error_type == "reddit_json":
-                # Reddit returns JSON with "error" key if user doesn't exist
                 if resp.status_code == 200:
                     try:
                         data = resp.json()
-                        # Reddit returns {"kind": "t2", "data": {...}} for real users
                         exists = data.get("kind") == "t2"
                     except Exception:
                         exists = False
-                else:
-                    exists = False
 
             if exists:
                 return {
@@ -320,39 +373,31 @@ async def _check_site(
                     "status": resp.status_code,
                     "username": username
                 }
-
-        except (httpx.TimeoutException, httpx.ConnectError, httpx.ReadError, Exception):
-            # Site unreachable or blocked — skip silently
+        except Exception:
             pass
-
     return None
 
-
 async def scan_username(username: str) -> dict:
-    """
-    Scan a username across all registered sites.
-    Returns structured results grouped by category.
-    """
-    # Basic input sanitization
     username = username.strip().lstrip("@")
     if not username or not re.match(r"^[a-zA-Z0-9._-]{1,40}$", username):
-        return {"error": "Invalid username format. Use only letters, numbers, dots, dashes, or underscores."}
+        return {"error": "Invalid username format."}
 
-    results: list[dict] = []
-
-    # Throttle concurrency so we don't get rate-limited everywhere
+    variations = generate_username_variations(username)
     semaphore = asyncio.Semaphore(15)
 
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                       "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Accept": "text/html,application/xhtml+xml,application/json,*/*",
         "Accept-Language": "en-US,en;q=0.9",
     }
 
-    async with httpx.AsyncClient(headers=headers) as client:
+    timeout = httpx.Timeout(12.0, pool=None)
+    limits = httpx.Limits(max_connections=15, max_keepalive_connections=5)
+
+    async with httpx.AsyncClient(headers=headers, timeout=timeout, limits=limits) as client:
         tasks = [
-            _check_site(client, name, cfg, username, semaphore)
+            _check_site(client, name, cfg, variant, semaphore)
+            for variant in variations
             for name, cfg in SITES.items()
         ]
         raw_results = await asyncio.gather(*tasks)
@@ -367,17 +412,16 @@ async def scan_username(username: str) -> dict:
             categories[cat] = []
         categories[cat].append(r)
 
-    # Check if GitHub was found — extract username for potential deep scan
     github_username = None
     for r in results:
         if r["site"] == "GitHub":
-            github_username = username
+            github_username = r["username"]
             break
 
     return {
         "username": username,
         "total_found": len(results),
-        "total_checked": len(SITES),
+        "total_checked": len(SITES) * len(variations),
         "results": results,
         "categories": categories,
         "github_username": github_username,

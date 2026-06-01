@@ -52,7 +52,7 @@ function App() {
       setIsScanning(false);
     }
   };
-  
+
   function clearLog() {
     setScanData(null);
     setGitData(null);
@@ -73,24 +73,24 @@ function App() {
       <p style={{ color: '#888', marginTop: '-0.5rem', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
         Open source intelligence scanner
       </p>
-      
+
       <div style={{ margin: '2rem 0' }}>
-        <input 
-          type="text" 
+        <input
+          type="text"
           value={inputTarget}
           onChange={(e) => setInputTarget(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Enter a username or GitHub link"
-          style={{ 
-            background: '#141414', border: '1px solid #00ff66', padding: '0.75rem', 
-            color: '#fff', width: '380px', marginRight: '1rem', fontFamily: 'monospace' 
+          style={{
+            background: '#141414', border: '1px solid #00ff66', padding: '0.75rem',
+            color: '#fff', width: '380px', marginRight: '1rem', fontFamily: 'monospace'
           }}
         />
-        <button 
+        <button
           onClick={startRecon}
-          style={{ 
-            background: '#00ff66', color: '#000', border: 'none', padding: '0.75rem 1.75rem', 
-            cursor: 'pointer', fontWeight: 'bold', fontFamily: 'monospace' 
+          style={{
+            background: '#00ff66', color: '#000', border: 'none', padding: '0.75rem 1.75rem',
+            cursor: 'pointer', fontWeight: 'bold', fontFamily: 'monospace'
           }}
           disabled={isScanning}
         >
@@ -100,8 +100,8 @@ function App() {
           <button
             onClick={clearLog}
             disabled={isScanning}
-            style={{ 
-              background: 'transparent', color: '#888', border: '1px solid #333', padding: '0.75rem 1.75rem', 
+            style={{
+              background: 'transparent', color: '#888', border: '1px solid #333', padding: '0.75rem 1.75rem',
               cursor: 'pointer', fontFamily: 'monospace', marginLeft: '0.5rem'
             }}
           >
@@ -127,14 +127,14 @@ function App() {
       {scanData && engine === 'git' && (
         <div style={{ marginTop: '2rem' }}>
           <TargetProfile scanData={scanData} />
-          
+
           <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
           {activeTab === 'overview' ? (
-            <OverviewTab 
-              scanData={scanData} 
-              showStandardList={showStandardList} 
-              setShowStandardList={setShowStandardList} 
+            <OverviewTab
+              scanData={scanData}
+              showStandardList={showStandardList}
+              setShowStandardList={setShowStandardList}
             />
           ) : (
             <AnalyticsTab scanData={scanData} />
@@ -152,8 +152,8 @@ function App() {
               Username: {scanData.username}
             </h3>
             <p style={{ margin: '0.5rem 0 0 0', color: '#aaa', fontSize: '0.9rem' }}>
-              Scanned {scanData.total_checked} platforms — found {scanData.total_found} matching profiles
-              {gitData && ' — GitHub account detected, repository data included below'}
+              Scanned {scanData.total_checked} platforms - found {scanData.total_found} matching profiles
+              {gitData && ' - GitHub account detected, repository data included below'}
             </p>
           </div>
 
