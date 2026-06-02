@@ -350,9 +350,7 @@ async def _check_site(
             body_lower = resp.text.lower()
             is_blocked_text = (
                 "cloudflare" in body_lower or 
-                "sucuri" in body_lower or
-                "consent.youtube.com" in str(resp.url) or
-                "consentui" in resp.text
+                "sucuri" in body_lower
             )
             
             if is_blocked_status or is_blocked_text:

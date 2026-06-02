@@ -2,23 +2,21 @@
 
 A local desktop reconnaissance and asset-auditing dashboard. It takes a target handle or link, queries public networks, runs custom evaluation logic on the data, and splits the findings into prioritized risks vs. general logs.
 
-## FEATURES ATM: (readme last updated on May 31 2026)
-- Tabbed dashboard UI with overview and social overview sections.
-- FastAPI server backend running asynchronous, fetching with httpx & curl_cffi.
-- Username scanner that checks 50+ websites concurrently and groups results by category (development, social, gaming, media, etc.)
-- Improved searching and scraping using browser impersonating and error flagging, so the user can know what to verify by hand.
-- Automatic GitHub deep scan if a profile is discovered during the social scan, or if a GitHub link is queried directly.
-- Risk filter that parses repositories and splits them into "interesting" vs "standard" based on sensitive keywords in metadata, popularity, etc. TO BE IMPROVED
-- Asynchronous commit history checker to fetch and audit public commits directly in the accordion UI.
+## FEATURES ATM: (readme last updated on June 2 2026)
+- **DeepPry Launchpad UI:** An interactive dossier view tracking target accounts with automatic cross-origin media fallback protocols for forbidden resource handling.
+- **Stealth Browser Orchestration:** Advanced deep-reconnaissance module (`nodriver`) that spawns concurrent, isolated headless Chrome instances to bypass anti-scraping walls.
+- **Deep Profile Telemetry Extraction:** Captures un-vetted metadata blocks including biography extracts, cross-referenced outbound links, and dynamic platform-specific variables (karma, followers, post counts, cake days).
+- **FastAPI server backend:** Runs asynchronous tasks, used for fetching with httpx & curl_cffi. Collects data on a username(s).
+- **More filters for false positives:** lets a user know when the scanner was blocked from a website, allowing human verification to see if a profile exists.
+- **Automatic github deep scan:** Uses github's API to gather information on a user's repositories and commit history.
 
 ## TODO:
 - Improve on the scanner to yield less false positives.
 - Implement data analytics.
 
 ## FUTURE FEATURES TASKLIST:
-- Analytics depth - analyze and find connections between data, names, etc.
+- Analytics depth: analyze and find connections between data, names, etc.
 - Deep source code scanner looking for secrets inside files.
-- Exporting scan results and saving them.
 - Port to electron for easier running.
 
 ## Current Project Layout
@@ -27,6 +25,7 @@ OS-RECON/
 ├── backend/                  # The backend server folder, handles scraping & processing.
 │   ├── engines/              # Scrapers and parsers depending on input type.
 │   │   ├── git_engine.py     # GitHub repository analysis & commit fetching.
+│   │   ├── pry_engine.py     # Stealth browser automation engine via nodriver.
 │   │   └── social_engine.py  # Asynchronous username check registry & probe logic.
 │   └── main.py               # FastAPI application server.
 └── frontend/                 # React TS + Vite frontend UI.
@@ -38,7 +37,7 @@ OS-RECON/
 ```bash
 cd backend
 pip install -r requirements.txt
-python -m uvicorn main:app --reload
+python -m uvicorn main:app
 ```
 
 ### Frontend 
