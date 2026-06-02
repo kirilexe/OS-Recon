@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { SocialResults } from './SocialResults';
 import { OverviewTab } from './OverviewTab';
+import { DeepPryLaunchpad } from './DeepPry';
 
 interface SocialOverviewProps {
   socialData: any;
@@ -8,7 +9,7 @@ interface SocialOverviewProps {
 }
 
 export function SocialOverview({ socialData, gitData }: SocialOverviewProps) {
-  const [activeSection, setActiveSection] = useState<'social' | 'github'>('social');
+  const [activeSection, setActiveSection] = useState<'social' | 'github' | 'deep pry'>('social');
   const [showStandardList, setShowStandardList] = useState(false);
 
   const hasGitHub = gitData !== null;
@@ -16,25 +17,26 @@ export function SocialOverview({ socialData, gitData }: SocialOverviewProps) {
   return (
     <div>
       {/* Section toggle — only show if GitHub data exists */}
-      {hasGitHub && (
-        <div style={{
-          display: 'flex', gap: '1rem', marginBottom: '1.5rem',
-          borderBottom: '1px solid #333', paddingBottom: '1rem',
-        }}>
-          <button
-            onClick={() => setActiveSection('social')}
-            style={{
-              background: activeSection === 'social' ? '#00ff66' : '#141414',
-              color: activeSection === 'social' ? '#000' : '#00ff66',
-              border: activeSection === 'social' ? 'none' : '1px solid #00ff66',
-              padding: '0.75rem 1.75rem',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontFamily: 'monospace',
-            }}
-          >
-            SOCIAL PROFILES
-          </button>
+      <div style={{
+        display: 'flex', gap: '1rem', marginBottom: '1.5rem',
+        borderBottom: '1px solid #333', paddingBottom: '1rem',
+      }}>
+        <button
+          onClick={() => setActiveSection('social')}
+          style={{
+            background: activeSection === 'social' ? '#00ff66' : '#141414',
+            color: activeSection === 'social' ? '#000' : '#00ff66',
+            border: activeSection === 'social' ? 'none' : '1px solid #00ff66',
+            padding: '0.75rem 1.75rem',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontFamily: 'monospace',
+          }}
+        >
+          SOCIAL PROFILES
+        </button>
+
+        {hasGitHub && (
           <button
             onClick={() => setActiveSection('github')}
             style={{
@@ -49,8 +51,23 @@ export function SocialOverview({ socialData, gitData }: SocialOverviewProps) {
           >
             GITHUB DETAILS
           </button>
-        </div>
-      )}
+        )}
+
+        <button
+          onClick={() => setActiveSection('deep pry')}
+          style={{
+            background: activeSection === 'deep pry' ? '#00ff66' : '#141414',
+            color: activeSection === 'deep pry' ? '#000' : '#00ff66',
+            border: activeSection === 'deep pry' ? 'none' : '1px solid #00ff66',
+            padding: '0.75rem 1.75rem',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontFamily: 'monospace',
+          }}
+        >
+          DEEP PRY QUEUE
+        </button>
+      </div>
 
       {/* Social section */}
       {activeSection === 'social' && (
@@ -79,6 +96,10 @@ export function SocialOverview({ socialData, gitData }: SocialOverviewProps) {
             setShowStandardList={setShowStandardList}
           />
         </div>
+      )}
+
+      {activeSection === 'deep pry' && (
+        <DeepPryLaunchpad />
       )}
     </div>
   );

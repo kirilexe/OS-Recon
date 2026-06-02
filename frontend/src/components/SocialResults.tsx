@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useScanner } from '../context/ScannerContext';
 
 interface SocialResult {
   site: string;
@@ -41,6 +42,8 @@ export function SocialResults({ results, categories, totalFound, totalChecked }:
   // State tracking for which username blocks are toggled open
   // Key format: "category-username"
   const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
+
+  const { stagedProfiles, toggleProfile } = useScanner();
 
   const toggleDropdown = (key: string) => {
     setOpenDropdowns((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -159,6 +162,7 @@ export function SocialResults({ results, categories, totalFound, totalChecked }:
                       }}>
                         {userResults.map((result, idx) => {
                           const isBlocked = result.status === 'Blocked';
+                          const isStaged = !!stagedProfiles[result.site];
 
                           return (
                             <a
@@ -167,8 +171,8 @@ export function SocialResults({ results, categories, totalFound, totalChecked }:
                               target="_blank"
                               rel="noreferrer"
                               style={{
-                                background: '#141414',
-                                border: isBlocked ? '1px dashed #f59e0b50' : `1px solid ${color}30`,
+                                background: isStaged ? '#111612' : '#141414',
+                                border: isStaged ? '1px solid #00ff6650' : isBlocked ? '1px dashed #f59e0b50' : `1px solid ${color}30`,
                                 padding: '0.75rem 1rem',
                                 display: 'flex',
                                 justifyContent: 'space-between',
@@ -178,12 +182,12 @@ export function SocialResults({ results, categories, totalFound, totalChecked }:
                                 cursor: 'pointer',
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.borderColor = isBlocked ? '#f59e0b' : color;
-                                e.currentTarget.style.background = '#1a1a1a';
+                                e.currentTarget.style.borderColor = isStaged ? '#00ff66' : isBlocked ? '#f59e0b' : color;
+                                e.currentTarget.style.background = isStaged ? '#141f16' : '#1a1a1a';
                               }}
                               onMouseLeave={(e) => {
-                                e.currentTarget.style.borderColor = isBlocked ? '#f59e0b50' : `${color}30`;
-                                e.currentTarget.style.background = '#141414';
+                                e.currentTarget.style.borderColor = isStaged ? '#00ff6650' : isBlocked ? '#f59e0b50' : `${color}30`;
+                                e.currentTarget.style.background = isStaged ? '#111612' : '#141414';
                               }}
                             >
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '2px' }}>
@@ -219,6 +223,27 @@ export function SocialResults({ results, categories, totalFound, totalChecked }:
                                     FOUND
                                   </span>
                                 )}
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    toggleProfile(result);
+                                  }}
+                                  style={{
+                                    background: isStaged ? '#00ff66' : 'transparent',
+                                    color: isStaged ? '#000' : '#666',
+                                    border: isStaged ? '1px solid #00ff66' : '1px solid #444',
+                                    fontFamily: 'monospace',
+                                    fontSize: '0.7rem',
+                                    fontWeight: 'bold',
+                                    padding: '0.15rem 0.4rem',
+                                    borderRadius: '2px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.15s',
+                                  }}
+                                >
+                                  {isStaged ? 'STAGED' : 'PRY'}
+                                </button>
                                 <span style={{ color: '#444', fontFamily: 'monospace', fontSize: '0.75rem' }}>
                                   ↗
                                 </span>

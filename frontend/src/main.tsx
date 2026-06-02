@@ -1,10 +1,13 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { ScannerProvider } from './context/ScannerContext';
 import './index.css'
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+  <ScannerProvider>
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  </ScannerProvider>
 )

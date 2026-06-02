@@ -8,6 +8,7 @@ export function TabNavigation({ activeTab, setActiveTab }: TabNavigationProps) {
   const tabs = [
     { id: 'overview', label: 'OVERVIEW' },
     { id: 'analytics', label: 'ANALYTICS' },
+    { id: 'deep pry', label: 'DEEP PRY'},
   ];
 
   return (
