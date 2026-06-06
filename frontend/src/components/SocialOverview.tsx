@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { SocialResults } from './SocialResults';
 import { OverviewTab } from './OverviewTab';
 import { DeepPryLaunchpad } from './DeepPry';
+import { AnalyticsTab } from './AnalyticsTab';
 
 interface SocialOverviewProps {
   socialData: any;
@@ -9,8 +10,9 @@ interface SocialOverviewProps {
 }
 
 export function SocialOverview({ socialData, gitData }: SocialOverviewProps) {
-  const [activeSection, setActiveSection] = useState<'social' | 'github' | 'deep pry'>('social');
+  const [activeSection, setActiveSection] = useState<'social' | 'github' | 'deep pry' | 'analytics'>('social');
   const [showStandardList, setShowStandardList] = useState(false);
+  const [pryResults, setPryResults] = useState<any[] | null>(null);
 
   const hasGitHub = gitData !== null;
 
@@ -67,6 +69,21 @@ export function SocialOverview({ socialData, gitData }: SocialOverviewProps) {
         >
           DEEP PRY QUEUE
         </button>
+
+        <button
+          onClick={() => setActiveSection('analytics')}
+          style={{
+            background: activeSection === 'analytics' ? '#00ff66' : '#141414',
+            color: activeSection === 'analytics' ? '#000' : '#00ff66',
+            border: activeSection === 'analytics' ? 'none' : '1px solid #00ff66',
+            padding: '0.75rem 1.75rem',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontFamily: 'monospace',
+          }}
+        >
+          ANALYTICS
+        </button>
       </div>
 
       {/* Social section */}
@@ -76,6 +93,7 @@ export function SocialOverview({ socialData, gitData }: SocialOverviewProps) {
           categories={socialData.categories}
           totalFound={socialData.total_found}
           totalChecked={socialData.total_checked}
+          exposedEmails={gitData?.exposed_emails}
         />
       )}
 
@@ -99,7 +117,15 @@ export function SocialOverview({ socialData, gitData }: SocialOverviewProps) {
       )}
 
       {activeSection === 'deep pry' && (
-        <DeepPryLaunchpad />
+        <DeepPryLaunchpad onPryComplete={setPryResults} pryResults={pryResults}/>
+      )}
+
+      {activeSection === 'analytics' && (
+        <AnalyticsTab
+          scanData={socialData}
+          gitData={gitData}
+          pryResults={pryResults}
+        />
       )}
     </div>
   );

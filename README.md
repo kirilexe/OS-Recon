@@ -1,6 +1,14 @@
 # OS-RECON
+> A local reconnaissance dashboard for digital footprint analysis. Unlike standard username checkers, OS-Recon combines passive social scanning with active deep-profile extraction - spawning isolated stealth browser instances using `nodriver` to bypass anti-scraping walls and pull raw metadata that static scanners can't reach.
 
-A local reconnaissance dashboard for digital footprint analysis. Unlike standard username checkers, OS-Recon combines passive social scanning with active deep-profile extraction - spawning isolated stealth browser instances using `nodriver` to bypass anti-scraping walls and pull raw metadata that static scanners can't reach.
+[![Python](https://img.shields.io/badge/Python-3.14-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.136-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![nodriver](https://img.shields.io/badge/nodriver-Stealth_Automation-4285f4?style=flat-square&logo=googlechrome&logoColor=white)](https://github.com/ultrafunkamsterdam/nodriver)
+[![HTTPX](https://img.shields.io/badge/HTTPX-Async_HTTP-1f425f?style=flat-square&logo=target&logoColor=white)](https://www.python-httpx.org/)
+[![curl-cffi](https://img.shields.io/badge/curl--cffi-Impersonate_TLS-064a6b?style=flat-square&logo=curl&logoColor=white)](https://github.com/lexiforest/curl_cffi)
+
 
 Built around three engines: a fast async social scanner, a stealth browser orchestration layer (nodriver), and a GitHub intelligence module that audits repositories, parses commit history, and extracts developer metadata automatically.
 
@@ -14,12 +22,12 @@ Results are split into prioritized risks and general logs - designed with struct
 - **Deep Profile Telemetry Extraction:** Captures un-vetted metadata blocks including biography extracts, cross-referenced outbound links, and dynamic platform specific variables (followers, post counts, bios, etc.).
 - **FastAPI server backend:** Runs asynchronous tasks, used for fetching with httpx & curl_cffi. Collects data on a username(s).
 - **More filters for false positives:** lets a user know when the scanner was blocked from a website, allowing human verification to see if a profile exists.
-- **Automatic github deep scan:** Automated intelligence that uses GitHub's API to extract repository risks, parse metadata metrics, and audit commit history.
+- **Automatic github deep scan:** Automated intelligence that uses GitHub's API to extract repository risks, parse metadata metrics, exposed emails, and audit commit history.
 
 ## TODO:
-- Fix bugs related to the nodriver deep pry scanner.
+- Add more deep scraping features (video metadata for social media, etc.)
 - Improve on the scanner to yield less false positives.
-- Implement data & AI analysis
+- Implement data & AI analysis & custom data imports that goes along with that (to give the LLM more context if needed so it can analyze better)
 
 ## FUTURE FEATURES TASKLIST:
 - LLM integration (analysis engine, NOT a chatbot): fully prompt engineered module that analyzes deep scan data and returns structured output rendered directly in the UI - bio pattern analysis, cross-platform connection mapping, risk flagging, etc.
@@ -42,6 +50,7 @@ OS-RECON/
 ```
 
 ## How to Run
+> **Disclaimer: This tool is developed strictly for educational, security auditing, and authorized open-source intelligence research. The developer assumes no liability for misuse or violations of third-party terms of service.**
 
 Requires Python 3.10+ and Node.js 18+. Chrome must be installed for the stealth browser module.
 

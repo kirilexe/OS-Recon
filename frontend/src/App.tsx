@@ -123,25 +123,6 @@ function App() {
         </div>
       )}
 
-      {/* Results */}
-      {scanData && engine === 'git' && (
-        <div style={{ marginTop: '2rem' }}>
-          <TargetProfile scanData={scanData} />
-
-          <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
-
-          {activeTab === 'overview' ? (
-            <OverviewTab
-              scanData={scanData}
-              showStandardList={showStandardList}
-              setShowStandardList={setShowStandardList}
-            />
-          ) : (
-            <AnalyticsTab scanData={scanData} />
-          )}
-        </div>
-      )}
-
       {scanData && engine === 'social' && (
         <div style={{ marginTop: '2rem' }}>
           {/* Social scan header */}

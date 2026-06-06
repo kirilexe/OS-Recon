@@ -1,5 +1,7 @@
 import httpx
 import re
+import random
+import asyncio
 
 # Refined keywords to find target-rich repositories
 CRITICAL_KEYWORDS = re.compile(r'(key|secret|token|config|db|passwd|auth|credential|private|env)', re.IGNORECASE)
@@ -114,3 +116,47 @@ async def fetch_repo_commits(username: str, repo_name: str):
 
         except Exception as e:
             return {"error": f"Failed to retrieve commit stream: {str(e)}"}
+        
+async def extract_emails_from_commits(username: str, repos: list) -> list[str]:
+    if not repos:
+        return []
+    
+    selected_repos = random.sample(repos, min(5, len(repos)))
+    
+    async def fetch_commits(client: httpx.AsyncClient, repo: dict) -> list:
+        repo_name = repo.get("name") or repo.get("full_name", "").split("/")[-1]
+        if not repo_name:
+            return []
+            
+        try:
+            response = await client.get(
+                f"https://api.github.com/repos/{username}/{repo_name}/commits",
+                params={"per_page": 30},
+                headers={"Accept": "application/vnd.github+json"},
+                timeout=10
+            )
+            if response.status_code == 200:
+                return response.json()
+        except httpx.RequestError:
+            pass
+            
+        return []
+
+    async with httpx.AsyncClient() as client:
+        tasks = [fetch_commits(client, repo) for repo in selected_repos]
+        results = await asyncio.gather(*tasks)
+        
+    emails = set()
+    
+    for commits in results:
+        for item in commits:
+            author_login = item.get("author") or {}
+            
+            if isinstance(author_login, dict) and author_login.get("login", "").lower() != username.lower():
+                continue
+            
+            email = item.get("commit", {}).get("author", {}).get("email", "")
+            if email and "noreply.github.com" not in email:
+                emails.add(email)
+                
+    return list(emails)

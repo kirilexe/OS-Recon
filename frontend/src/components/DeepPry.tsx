@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useScanner } from '../context/ScannerContext';
 
 interface StagedProfile {
@@ -59,7 +59,12 @@ const cleanRawValue = (val: any): string => {
   return valStr;
 };
 
-export function DeepPryLaunchpad(): React.JSX.Element {
+interface DeepPryLaunchpadProps {
+  onPryComplete?: (results: PryResult[]) => void;
+  pryResults?: PryResult[] | null;
+}
+
+export function DeepPryLaunchpad({ onPryComplete, pryResults = null }: DeepPryLaunchpadProps): React.JSX.Element {
   const { stagedProfiles, removeProfile, clearStage } = useScanner() as {
   stagedProfiles: Record<string, StagedProfile>;
   removeProfile: (username: string, site: string) => void;
@@ -69,9 +74,16 @@ export function DeepPryLaunchpad(): React.JSX.Element {
   const stagedArray: StagedProfile[] = Object.values(stagedProfiles);
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [results, setResults] = useState<PryResult[] | null>(null);
+  const [results, setResults] = useState<PryResult[] | null>(pryResults);
   const [showQueue, setShowQueue] = useState<boolean>(true);
   const [apiError, setApiError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (pryResults && pryResults.length > 0) {
+      setResults(pryResults);
+      setShowQueue(false);
+    }
+  }, [pryResults]);
 
   const [expandedIndex, setExpandedIndex] = useState<Record<number, boolean>>({ 0: true });
   const [showAdvancedMetadata, setShowAdvancedMetadata] = useState<Record<number, boolean>>({});
@@ -105,6 +117,10 @@ export function DeepPryLaunchpad(): React.JSX.Element {
         setResults(resData.data);
         setShowQueue(false);
         setExpandedIndex({ 0: true });
+
+        if (onPryComplete) {
+          onPryComplete(resData.data);
+        }
       } else {
         setApiError("Recon engine finished with an unhandled execution status.");
       }
