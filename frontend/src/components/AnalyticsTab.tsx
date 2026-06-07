@@ -125,6 +125,30 @@ export function AnalyticsTab({ scanData, gitData, pryResults }: AnalyticsTabProp
               </div>
             </div>
           )}
+
+          {gitData?.exposed_emails?.length > 0 && (
+            <div style={{ background: '#101010', border: '1px solid #222', padding: '1.25rem', borderRadius: '4px' }}>
+              <div style={{ ...s.label, marginBottom: '0.75rem', borderBottom: '1px dashed #222', paddingBottom: '0.4rem' }}>
+                EMAILS EXPOSED
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {gitData.exposed_emails.map((email: string) => (
+                  <div 
+                    key={email} 
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      fontFamily: 'monospace', 
+                      fontSize: '0.75rem' 
+                    }}
+                  >
+                    <span style={{ color: '#ff3333', marginRight: '0.75rem', fontWeight: 'bold' }}>[!]</span>
+                    <span style={{ color: '#aaa', letterSpacing: '0.05em' }}>{email}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>
