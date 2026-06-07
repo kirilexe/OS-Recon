@@ -45,12 +45,14 @@ SITES = {
     },
     "TikTok": {
         "url": "https://www.tiktok.com/@{}",
-        "errorType": "status_code",
+        "errorType": "message",
+        "errorMsg": "Couldn't find this account",
         "category": "social",
     },
     "Pinterest": {
         "url": "https://www.pinterest.com/{}/",
-        "errorType": "status_code",
+        "errorType": "message",
+        "errorMsg": "User not found",
         "category": "social",
     },
     "Twitch": {
@@ -146,11 +148,10 @@ SITES = {
         "errorType": "status_code",
         "category": "social",
     },
-    # FIXED: Codecademy redirects fake users to a 200 OK landing page. String checking stops false positives.
     "Codecademy": {
         "url": "https://www.codecademy.com/profiles/{}",
         "errorType": "message",
-        "errorMsg": "Page not found",
+        "errorMsg": "This profile could not be found",
         "category": "development",
     },
     "HackerRank": {
@@ -168,11 +169,9 @@ SITES = {
         "errorType": "status_code",
         "category": "development",
     },
-    # FIXED: PyPI handles soft 404s dynamically. Message verification locks it down.
     "PyPI": {
         "url": "https://pypi.org/user/{}",
-        "errorType": "message",
-        "errorMsg": "We looked everywhere but couldn't find this page",
+        "errorType": "status_code",
         "category": "development",
     },
     "Docker Hub": {
@@ -213,8 +212,8 @@ SITES = {
     "Telegram": {
         "url": "https://t.me/{}",
         "errorType": "message",
-        "errorMsg": "If you have <strong>Telegram</strong>, you can contact",
-        "invertMatch": True,
+        "errorMsg": "Telegram – a new era of messaging",
+        "invertMatch": False,
         "category": "social",
     },
     "Wattpad": {
