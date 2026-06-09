@@ -80,7 +80,7 @@ Requires Python 3.10+ and Node.js 18+. Chrome must be installed for the stealth 
 
 1. Head to the Groq Console.
 2. Generate a new API key under the API Keys management dashboard.
-3. Create a .env file in the backend/ directory and append your key:
+3. Create a .env file in the root directory and append your key:
 
 ```env
 GROQ_API_KEY=gsk_your_high_security_token_here
