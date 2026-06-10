@@ -107,6 +107,8 @@ Then follow the Backend and Frontend steps below.
 GROQ_API_KEY=gsk_your_high_security_token_here
 ```
 
+> To start the project you need to turn on the Backend and the Frontend.
+
 ### Backend
 ```bash
 cd backend
