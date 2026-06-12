@@ -67,6 +67,8 @@ OS-RECON/
 ## How to Run
 > **Disclaimer: This tool is developed strictly for educational, security auditing, and authorized open-source intelligence research. The developer assumes no liability for misuse or violations of third-party terms of service.**
 
+> **⚠️ The backend server is designed for local use only. Never expose it to a public network or the internet.**
+
 Requires Python 3.10+ and Node.js 18+. Chrome must be installed for the stealth browser module.
 
 ### Getting Started
