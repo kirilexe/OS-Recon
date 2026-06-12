@@ -103,16 +103,31 @@ Then follow the Backend and Frontend steps below.
 GROQ_API_KEY=gsk_your_high_security_token_here
 ```
 
-> To start the project you need to turn on the Backend and the Frontend.
+> To start the project you need to run the Backend and the Frontend through the root folder.
 
-### Backend
+### Setup & Package installation
+```bash
+cd backend
+pip install -r requirements.txt
+cd ..
+npm install
+```
+
+### One command startup (root folder)
+```bash
+npm start
+```
+
+### Manual startup (separate terminals)
+
+**Backend**
 ```bash
 cd backend
 pip install -r requirements.txt
 python -m uvicorn main:app
 ```
 
-### Frontend
+**Frontend**
 ```bash
 cd frontend
 npm install

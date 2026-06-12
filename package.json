@@ -1,0 +1,9 @@
+{
+  "name": "os-recon",
+  "scripts": {
+    "start": "concurrently \"cd backend && python -m uvicorn main:app\" \"cd frontend && npm run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}
